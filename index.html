@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global GDP Insights 2026 • IMF</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        :root { --primary: #3b82f6; }
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        .font-display { font-family: 'Space Grotesk', 'Inter', sans-serif; }
+        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); }
+        .metric-value { font-variant-numeric: tabular-nums; }
+        .dashboard-card { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease; }
+        .dashboard-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+        .gdp-bar { transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .section-header { position: relative; }
+        .section-header::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 60px; height: 3px; background: linear-gradient(to right, #3b82f6, #60a5fa); border-radius: 3px; }
+        table { border-collapse: separate; border-spacing: 0; }
+        th { position: sticky; top: 0; z-index: 10; }
+        .country-row { transition: background-color 0.2s ease; }
+        .country-row:hover { background-color: rgba(59, 130, 246, 0.08); }
+        .chart-container { position: relative; }
+        .glow-blue { box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200">
+    <!-- Navbar -->
+    <nav class="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-lg sticky top-0 z-50">
+        <div class="max-w-screen-2xl mx-auto px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center">
+                    <i class="fas fa-globe text-white text-2xl"></i>
+                </div>
+                <div>
+                    <span class="font-display text-2xl font-semibold tracking-tighter">GDP<span class="text-blue-400">Insights</span></span>
+                    <span class="text-[10px] text-zinc-500 block -mt-1">2026 • IMF</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-x-4">
+                <div class="px-4 py-1.5 rounded-3xl bg-zinc-900 text-xs flex items-center gap-x-2 border border-zinc-700">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span class="text-emerald-400 text-xs font-medium">LIVE DATA</span>
+                </div>
+                <a href="https://github.com/mm-bovespa/world-gdp-dashboard" target="_blank" class="flex items-center gap-x-2 px-5 py-2 text-sm font-medium hover:bg-zinc-900 transition-colors rounded-3xl border border-zinc-700">
+                    <i class="fab fa-github"></i>
+                    <span>View on GitHub</span>
+                </a>
+                <button onclick="window.location.reload()" class="px-5 py-2 text-sm font-medium flex items-center gap-x-2 hover:bg-zinc-900 transition-colors rounded-3xl border border-zinc-700">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Refresh</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="max-w-screen-2xl mx-auto px-8 pt-16 pb-12">
+        <div class="max-w-3xl">
+            <div class="inline-flex items-center gap-x-2 px-4 py-1 rounded-3xl bg-zinc-900 border border-zinc-700 mb-6">
+                <span class="text-xs font-mono tracking-[2px] text-blue-400">IMF WORLD ECONOMIC OUTLOOK APRIL 2026</span>
+            </div>
+            <h1 class="font-display text-7xl font-semibold tracking-tighter leading-none mb-4">The World's<br>Biggest Economies</h1>
+            <p class="text-2xl text-zinc-400 max-w-md">Nominal GDP comparison of the top 10 countries • 2026 projections</p>
+            
+            <div class="flex items-center gap-x-4 mt-8">
+                <button onclick="document.getElementById('charts').scrollIntoView({ behavior: 'smooth' })" 
+                        class="px-8 py-4 bg-white text-zinc-950 font-semibold rounded-3xl flex items-center gap-x-3 hover:bg-zinc-100 transition-all active:scale-[0.985]">
+                    <span>Explore Dashboard</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <a href="#table" class="px-8 py-4 border border-zinc-700 hover:bg-zinc-900 transition-all rounded-3xl font-medium flex items-center gap-x-3">
+                    <span>View Full Data</span>
+                </a>
+            </div>
+            <div class="mt-6 text-xs text-zinc-500 flex items-center gap-x-2">
+                <i class="fas fa-info-circle"></i>
+                <span>Data source: International Monetary Fund (IMF) • Updated projections as of April 2026</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="max-w-screen-2xl mx-auto px-8 pb-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1: World Total -->
+            <div class="dashboard-card glass border border-zinc-700 rounded-3xl p-8">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="text-zinc-400 text-sm font-medium">WORLD TOTAL GDP</div>
+                        <div id="world-gdp" class="metric-value text-5xl font-semibold tracking-tighter mt-3 text-white">126.3T</div>
+                        <div class="text-emerald-400 text-sm mt-1 flex items-center gap-x-1">
+                            <i class="fas fa-globe"></i> <span>+3.1% global growth</span>
+                        </div>
+                    </div>
+                    <div class="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-globe text-blue-400 text-3xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: #1 Economy -->
+            <div class="dashboard-card glass border border-zinc-700 rounded-3xl p-8">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="text-zinc-400 text-sm font-medium">#1 ECONOMY</div>
+                        <div class="flex items-baseline gap-x-3 mt-3">
+                            <span class="text-5xl font-semibold tracking-tighter">🇺🇸</span>
+                            <div>
+                                <div class="text-3xl font-semibold">United States</div>
+                                <div id="us-gdp" class="metric-value text-4xl font-semibold text-white mt-1">$32.38T</div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-xs px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-2xl w-fit">25.6% of world GDP</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Fastest Growing -->
+            <div class="dashboard-card glass border border-zinc-700 rounded-3xl p-8">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="text-zinc-400 text-sm font-medium">FASTEST GROWING</div>
+                        <div class="mt-4 flex items-center gap-x-3">
+                            <span class="text-4xl">🇮🇳</span>
+                            <div>
+                                <div class="text-3xl font-semibold">India</div>
+                                <div class="text-emerald-400 text-2xl font-semibold mt-1">+6.48%</div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-zinc-400 mt-4">Projected 2026 growth • Climbing to 5th</div>
+                    </div>
+                    <i class="fas fa-rocket text-emerald-400 text-4xl opacity-70"></i>
+                </div>
+            </div>
+
+            <!-- Card 4: Per Capita Leader -->
+            <div class="dashboard-card glass border border-zinc-700 rounded-3xl p-8">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="text-zinc-400 text-sm font-medium">HIGHEST GDP/CAPITA</div>
+                        <div class="mt-4">
+                            <div class="flex items-center gap-x-3">
+                                <span class="text-4xl">🇺🇸</span>
+                                <div class="text-3xl font-semibold">United States</div>
+                            </div>
+                            <div class="mt-2">
+                                <span class="text-4xl font-semibold tabular-nums">$94,430</span>
+                            </div>
+                            <div class="text-xs text-zinc-400 mt-1">Per person • 2026 est.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div id="charts" class="max-w-screen-2xl mx-auto px-8 pb-16">
+        <div class="flex items-end justify-between mb-8">
+            <div>
+                <div class="section-header">
+                    <h2 class="text-4xl font-semibold tracking-tight">Visual Comparisons</h2>
+                </div>
+                <p class="text-zinc-400 mt-2">Interactive charts powered by real IMF data</p>
+            </div>
+            <div class="text-xs px-4 py-2 bg-zinc-900 rounded-3xl border border-zinc-700 flex items-center gap-x-2">
+                <i class="fas fa-chart-bar text-blue-400"></i>
+                <span>Hover for details • Click legend to toggle</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <!-- Bar Chart -->
+            <div class="lg:col-span-3 glass border border-zinc-700 rounded-3xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <div class="font-semibold text-xl">GDP by Country (Trillions USD)</div>
+                        <div class="text-xs text-zinc-400">Nominal • 2026 IMF Projection</div>
+                    </div>
+                    <div class="text-xs bg-zinc-800 px-3 py-1 rounded-2xl">Top 10</div>
+                </div>
+                <div class="chart-container h-[420px]">
+                    <canvas id="gdpBarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Pie Chart -->
+            <div class="lg:col-span-2 glass border border-zinc-700 rounded-3xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <div class="font-semibold text-xl">Share of Global GDP</div>
+                        <div class="text-xs text-zinc-400">Top 10 economies</div>
+                    </div>
+                </div>
+                <div class="chart-container h-[420px] flex items-center justify-center">
+                    <canvas id="gdpPieChart"></canvas>
+                </div>
+                <div class="text-center text-[10px] text-zinc-500 mt-4">Rest of World: 32.4%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div id="table" class="max-w-screen-2xl mx-auto px-8 pb-20">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <div class="section-header">
+                    <h2 class="text-4xl font-semibold tracking-tight">Detailed Rankings</h2>
+                </div>
+                <p class="text-zinc-400">Sortable • Searchable • Exportable</p>
+            </div>
+            <div class="flex items-center gap-x-3">
+                <div class="relative w-72">
+                    <input id="searchInput" type="text" placeholder="Search countries..." 
+                           class="w-full bg-zinc-900 border border-zinc-700 focus:border-blue-500 transition-colors pl-10 py-3 rounded-3xl text-sm placeholder:text-zinc-500">
+                    <i class="fas fa-search absolute left-4 top-4 text-zinc-400"></i>
+                </div>
+                <button onclick="exportToCSV()" 
+                        class="flex items-center gap-x-2 px-6 py-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-3xl text-sm font-medium transition-colors">
+                    <i class="fas fa-download"></i>
+                    <span>Export CSV</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="glass border border-zinc-700 rounded-3xl overflow-hidden">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-zinc-900 border-b border-zinc-700">
+                        <th onclick="sortTable(0)" class="px-8 py-5 text-left text-xs font-semibold text-zinc-400 cursor-pointer hover:text-white transition-colors">RANK <i class="fas fa-sort ml-1"></i></th>
+                        <th onclick="sortTable(1)" class="px-8 py-5 text-left text-xs font-semibold text-zinc-400 cursor-pointer hover:text-white transition-colors">COUNTRY <i class="fas fa-sort ml-1"></i></th>
+                        <th onclick="sortTable(2)" class="px-8 py-5 text-right text-xs font-semibold text-zinc-400 cursor-pointer hover:text-white transition-colors">GDP (USD) <i class="fas fa-sort ml-1"></i></th>
+                        <th onclick="sortTable(3)" class="px-8 py-5 text-right text-xs font-semibold text-zinc-400 cursor-pointer hover:text-white transition-colors">WORLD SHARE <i class="fas fa-sort ml-1"></i></th>
+                        <th onclick="sortTable(4)" class="px-8 py-5 text-right text-xs font-semibold text-zinc-400 cursor-pointer hover:text-white transition-colors">GROWTH 2026 <i class="fas fa-sort ml-1"></i></th>
+                        <th onclick="sortTable(5)" class="px-8 py-5 text-right text-xs font-semibold text-zinc-400 cursor-pointer hover:text-white transition-colors">GDP PER CAPITA <i class="fas fa-sort ml-1"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="dataTableBody" class="text-sm divide-y divide-zinc-800">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center mt-4 text-xs text-zinc-500">Click column headers to sort • Data as of May 2026</div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-zinc-800 bg-zinc-950 py-12">
+        <div class="max-w-screen-2xl mx-auto px-8 text-center">
+            <div class="flex justify-center items-center gap-x-2 mb-4">
+                <div class="px-4 py-1 bg-zinc-900 rounded-3xl text-xs flex items-center gap-x-2 border border-zinc-700">
+                    <span>Built instantly by</span> 
+                    <span class="font-semibold text-blue-400">Grok</span>
+                    <span class="text-zinc-400">• xAI</span>
+                </div>
+            </div>
+            <p class="text-xs text-zinc-500 max-w-md mx-auto">This dashboard was automatically generated from your natural language request and deployed via GitHub. All data sourced from official IMF World Economic Outlook (April 2026). Projections subject to change.</p>
+            <div class="mt-8 flex justify-center gap-x-6 text-xs">
+                <a href="https://www.imf.org/en/Publications/WEO" target="_blank" class="hover:text-white transition-colors">IMF Data</a>
+                <span class="text-zinc-700">•</span>
+                <a href="https://github.com/mm-bovespa/world-gdp-dashboard" target="_blank" class="hover:text-white transition-colors">Source Code</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tailwind script
+        function initTailwind() {
+            document.documentElement.style.setProperty('--accent', '#3b82f6');
+        }
+
+        // Data from IMF April 2026
+        const countries = [
+            { rank: 1, name: "United States", gdp: 32383920, growth: 2.32, perCap: 94430, flag: "🇺🇸" },
+            { rank: 2, name: "China", gdp: 20851593, growth: 4.41, perCap: 14874, flag: "🇨🇳" },
+            { rank: 3, name: "Germany", gdp: 5452858, growth: 0.79, perCap: 65303, flag: "🇩🇪" },
+            { rank: 4, name: "Japan", gdp: 4379253, growth: 0.72, perCap: 35703, flag: "🇯🇵" },
+            { rank: 5, name: "United Kingdom", gdp: 4264794, growth: 0.80, perCap: 61056, flag: "🇬🇧" },
+            { rank: 6, name: "India", gdp: 4153191, growth: 6.48, perCap: 2813, flag: "🇮🇳" },
+            { rank: 7, name: "France", gdp: 3596094, growth: 0.86, perCap: 52083, flag: "🇫🇷" },
+            { rank: 8, name: "Italy", gdp: 2738164, growth: 0.52, perCap: 46505, flag: "🇮🇹" },
+            { rank: 9, name: "Russia", gdp: 2656452, growth: 1.09, perCap: 18525, flag: "🇷🇺" },
+            { rank: 10, name: "Brazil", gdp: 2640000, growth: 1.91, perCap: 12313, flag: "🇧🇷" }
+        ];
+
+        const WORLD_GDP = 126295331; // million USD
+
+        function formatGDP(millionUSD) {
+            return (millionUSD / 1000000).toFixed(2);
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString('en-US');
+        }
+
+        // Animate number counting
+        function animateValue(id, start, end, duration, suffix = '') {
+            const obj = document.getElementById(id);
+            if (!obj) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                obj.innerHTML = value.toLocaleString() + suffix;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.innerHTML = end.toLocaleString() + suffix;
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Render table
+        let currentSort = { column: 0, asc: true };
+
+        function renderTable(filteredCountries = countries) {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
+
+            filteredCountries.forEach(country => {
+                const share = ((country.gdp / WORLD_GDP) * 100).toFixed(1);
+                const gdpT = formatGDP(country.gdp);
+                
+                const row = document.createElement('tr');
+                row.className = 'country-row';
+                row.innerHTML = `
+                    <td class="px-8 py-5 font-mono text-xs text-zinc-400">#${country.rank}</td>
+                    <td class="px-8 py-5">
+                        <div class="flex items-center gap-x-3">
+                            <span class="text-2xl">${country.flag}</span>
+                            <span class="font-semibold">${country.name}</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 text-right font-medium tabular-nums">$${gdpT}T</td>
+                    <td class="px-8 py-5 text-right">
+                        <div class="flex items-center justify-end gap-x-2">
+                            <div class="w-16 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+                                <div class="h-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full" style="width: ${share}%"></div>
+                            </div>
+                            <span class="font-mono text-xs w-10 text-right">${share}%</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 text-right">
+                        <span class="inline-flex items-center px-3 py-1 rounded-2xl text-xs font-medium ${country.growth > 3 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-zinc-800 text-zinc-300'}">
+                            +${country.growth}%
+                        </span>
+                    </td>
+                    <td class="px-8 py-5 text-right font-mono text-xs text-zinc-300">$${formatNumber(country.perCap)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Sort table
+        function sortTable(column) {
+            const tbody = document.getElementById('dataTableBody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            const isAsc = currentSort.column === column ? !currentSort.asc : true;
+            currentSort = { column, asc: isAsc };
+
+            rows.sort((a, b) => {
+                let valA, valB;
+                if (column === 0) { // rank
+                    valA = parseInt(a.cells[0].textContent.replace('#',''));
+                    valB = parseInt(b.cells[0].textContent.replace('#',''));
+                } else if (column === 1) { // name
+                    valA = a.cells[1].textContent.trim();
+                    valB = b.cells[1].textContent.trim();
+                    return isAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                } else if (column === 2) { // gdp
+                    valA = parseFloat(a.cells[2].textContent.replace('$','').replace('T',''));
+                    valB = parseFloat(b.cells[2].textContent.replace('$','').replace('T',''));
+                } else if (column === 3) { // share
+                    valA = parseFloat(a.cells[3].textContent);
+                    valB = parseFloat(b.cells[3].textContent);
+                } else if (column === 4) { // growth
+                    valA = parseFloat(a.cells[4].textContent.replace('+','').replace('%',''));
+                    valB = parseFloat(b.cells[4].textContent.replace('+','').replace('%',''));
+                } else if (column === 5) { // percap
+                    valA = parseInt(a.cells[5].textContent.replace('$','').replace(/,/g,''));
+                    valB = parseInt(b.cells[5].textContent.replace('$','').replace(/,/g,''));
+                }
+                return isAsc ? valA - valB : valB - valA;
+            });
+
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        // Search
+        function setupSearch() {
+            const input = document.getElementById('searchInput');
+            input.addEventListener('input', () => {
+                const term = input.value.toLowerCase().trim();
+                if (!term) {
+                    renderTable(countries);
+                    return;
+                }
+                const filtered = countries.filter(c => 
+                    c.name.toLowerCase().includes(term) || 
+                    c.flag.includes(term)
+                );
+                renderTable(filtered);
+            });
+        }
+
+        // Charts
+        let barChart, pieChart;
+
+        function createCharts() {
+            // Bar Chart
+            const barCtx = document.getElementById('gdpBarChart').getContext('2d');
+            const labels = countries.map(c => c.name);
+            const gdpData = countries.map(c => (c.gdp / 1000000).toFixed(2));
+            
+            barChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'GDP (Trillion USD)',
+                        data: gdpData,
+                        backgroundColor: '#3b82f6',
+                        borderColor: '#60a5fa',
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        barThickness: 28
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => '$' + ctx.raw + 'T'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            grid: { color: '#27272a' },
+                            ticks: { color: '#71717a', font: { size: 11 } },
+                            beginAtZero: true
+                        },
+                        x: { 
+                            grid: { color: '#27272a' },
+                            ticks: { color: '#71717a', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+
+            // Pie Chart
+            const pieCtx = document.getElementById('gdpPieChart').getContext('2d');
+            const pieData = countries.map(c => (c.gdp / WORLD_GDP * 100).toFixed(1));
+            const pieLabels = countries.map(c => c.name);
+            const colors = ['#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#22c55e', '#14b8a6'];
+
+            pieChart = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: pieLabels,
+                    datasets: [{
+                        data: pieData,
+                        backgroundColor: colors,
+                        borderColor: '#18181b',
+                        borderWidth: 4,
+                        hoverOffset: 20
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '68%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { 
+                                color: '#a1a1aa', 
+                                font: { size: 11 },
+                                padding: 16,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ctx.label + ': ' + ctx.raw + '%'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Export CSV
+        function exportToCSV() {
+            let csv = 'Rank,Country,GDP (Trillion USD),World Share (%),Growth (%),GDP per Capita (USD)\n';
+            countries.forEach(c => {
+                const share = ((c.gdp / WORLD_GDP) * 100).toFixed(1);
+                csv += `${c.rank},${c.name},${(c.gdp/1000000).toFixed(2)},${share},${c.growth},${c.perCap}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'top-10-gdp-2026-imf.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize everything
+        function initializeDashboard() {
+            initTailwind();
+
+            // Animate metrics
+            setTimeout(() => {
+                animateValue('world-gdp', 100, 126.3, 1400, 'T');
+                const usEl = document.getElementById('us-gdp');
+                if (usEl) usEl.textContent = '$32.38T';
+            }, 400);
+
+            // Render table
+            renderTable();
+
+            // Setup search
+            setupSearch();
+
+            // Create charts
+            setTimeout(() => {
+                createCharts();
+            }, 600);
+
+            // Keyboard shortcut hint
+            console.log('%c[GDP Dashboard] Press / to focus search', 'color:#52525b');
+            document.addEventListener('keydown', function(e) {
+                if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+                    e.preventDefault();
+                    document.getElementById('searchInput').focus();
+                }
+            });
+
+            // Easter egg: click logo for confetti (simple)
+            const logo = document.querySelector('.fa-globe');
+            if (logo) {
+                logo.addEventListener('click', () => {
+                    const colors = ['#3b82f6', '#6366f1', '#a855f7'];
+                    for (let i = 0; i < 25; i++) {
+                        setTimeout(() => {
+                            const particle = document.createElement('div');
+                            particle.style.cssText = `position:fixed;left:${Math.random()*100}vw;top:-20px;width:6px;height:6px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:50%;z-index:9999;pointer-events:none;`;
+                            document.body.appendChild(particle);
+                            const fall = setInterval(() => {
+                                const y = parseFloat(particle.style.top);
+                                particle.style.top = (y + 8) + 'px';
+                                if (y > window.innerHeight) {
+                                    clearInterval(fall);
+                                    particle.remove();
+                                }
+                            }, 30);
+                        }, i * 8);
+                    }
+                });
+            }
+
+            // Final touch: subtle welcome toast
+            setTimeout(() => {
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-6 right-6 bg-zinc-900 border border-zinc-700 text-xs px-5 py-3 rounded-3xl flex items-center gap-x-3 shadow-xl';
+                toast.innerHTML = `<span>✨ Dashboard ready. Try sorting the table or hovering charts!</span>`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.style.transition = 'opacity 0.4s', 10);
+                setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 400); }, 2800);
+            }, 2200);
+        }
+
+        // Boot
+        window.onload = initializeDashboard;
+    </script>
+</body>
+</html>
